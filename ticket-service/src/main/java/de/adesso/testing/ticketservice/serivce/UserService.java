@@ -2,6 +2,7 @@ package de.adesso.testing.ticketservice.serivce;
 
 import de.adesso.testing.ticketservice.model.User;
 import de.adesso.testing.ticketservice.repository.UserRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,5 +25,12 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
+    }
+
+    @Transactional
+    public void updateUsername(Long id, String newUsername) {
+        userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .setName(newUsername);
     }
 }

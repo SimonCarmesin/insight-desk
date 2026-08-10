@@ -1,18 +1,18 @@
 package de.adesso.testing.ticketservice.controller;
 
+import de.adesso.testing.ticketservice.model.UpdateUsernameRequest;
 import de.adesso.testing.ticketservice.model.User;
 import de.adesso.testing.ticketservice.serivce.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class UserController {
 
-    public record CreateUserRequest(String name, String password) {}
+    public record CreateUserRequest(String name, String password) {
+    }
 
     private final UserService userService;
 
@@ -29,5 +29,13 @@ public class UserController {
     @GetMapping("/users")
     public List<User> getUsers() {
         return userService.getAllUsers();
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUsername(
+            @PathVariable Long id,
+            @RequestBody UpdateUsernameRequest request) {
+        userService.updateUsername(id, request.newUsername());
+        return ResponseEntity.ok("Username updated");
     }
 }
