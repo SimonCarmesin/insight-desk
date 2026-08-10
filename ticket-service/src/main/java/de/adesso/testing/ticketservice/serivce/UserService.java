@@ -27,6 +27,11 @@ public class UserService {
         return userRepo.findAll();
     }
 
+    public User getUserById(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     @Transactional
     public void updateUsername(Long id, String newUsername) {
         userRepo.findById(id)
