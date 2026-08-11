@@ -1,15 +1,13 @@
 package de.adesso.testing.ticketservice.controller;
 
 import de.adesso.testing.ticketservice.exception.UserNotFoundException;
-import de.adesso.testing.ticketservice.model.CreateUserRequest;
-import de.adesso.testing.ticketservice.model.UpdateUsernameRequest;
-import de.adesso.testing.ticketservice.model.User;
+import de.adesso.testing.ticketservice.model.user.userrequests.CreateUserRequest;
+import de.adesso.testing.ticketservice.model.user.userrequests.UpdateUsernameRequest;
+import de.adesso.testing.ticketservice.model.user.User;
 import de.adesso.testing.ticketservice.repository.UserRepo;
 import de.adesso.testing.ticketservice.serivce.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class UserController {

@@ -1,5 +1,6 @@
-package de.adesso.testing.ticketservice.model;
+package de.adesso.testing.ticketservice.model.tickets;
 
+import de.adesso.testing.ticketservice.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

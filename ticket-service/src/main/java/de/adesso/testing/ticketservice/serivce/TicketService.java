@@ -3,7 +3,11 @@ package de.adesso.testing.ticketservice.serivce;
 import de.adesso.testing.ticketservice.exception.InvalidTicketDataException;
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
 import de.adesso.testing.ticketservice.exception.UserNotFoundException;
-import de.adesso.testing.ticketservice.model.*;
+import de.adesso.testing.ticketservice.model.tickets.ticketrequests.CreateTicketRequest;
+import de.adesso.testing.ticketservice.model.tickets.Priority;
+import de.adesso.testing.ticketservice.model.tickets.Status;
+import de.adesso.testing.ticketservice.model.tickets.Ticket;
+import de.adesso.testing.ticketservice.model.user.User;
 import de.adesso.testing.ticketservice.repository.TicketRepo;
 import de.adesso.testing.ticketservice.repository.UserRepo;
 import jakarta.transaction.Transactional;
@@ -53,13 +57,46 @@ public class TicketService {
                 .orElseThrow(() -> new TicketNotFoundException(id));
     }
 
-    public Ticket updateTicketStatus (Long id, String newStatus) {
+    @Transactional
+    public Ticket updateTicketStatus(Long id, String newStatusRaw) {
         Ticket ticket = ticketRepo.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
-        Status status = Status.valueOf(newStatus);
-        ticket.setStatus(status);
+        Status newStatus = Status.valueOf(newStatusRaw);
+
+        if (ticket.getStatus() == Status.CLOSED
+                && (newStatus == Status.OPEN || newStatus == Status.IN_PROGRESS)) {
+            throw new InvalidTicketDataException("Cannot change status from CLOSED to " + newStatus);
+        }
+
+        ticket.setStatus(newStatus);
         return ticketRepo.save(ticket);
+    }
+
+    @Transactional
+    public Ticket updateTicketPriority (Long id, String newPriority) {
+        Ticket ticket = ticketRepo.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+
+        Priority priority = Priority.valueOf(newPriority);
+        ticket.setPriority(priority);
+        return ticketRepo.save(ticket);
+    }
+
+    @Transactional
+    public Ticket updateTicketDescription(Long id, String newDescription) {
+        Ticket ticket = ticketRepo.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+
+        ticket.setDescription(newDescription);
+        return ticketRepo.save(ticket);
+    }
+
+    @Transactional
+    public void deleteTicket(Long id) {
+        Ticket ticket = ticketRepo.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        ticketRepo.delete(ticket);
     }
 
 }

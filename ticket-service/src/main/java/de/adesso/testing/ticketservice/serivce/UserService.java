@@ -1,6 +1,6 @@
 package de.adesso.testing.ticketservice.serivce;
 
-import de.adesso.testing.ticketservice.model.User;
+import de.adesso.testing.ticketservice.model.user.User;
 import de.adesso.testing.ticketservice.repository.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
