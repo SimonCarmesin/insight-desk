@@ -30,6 +30,9 @@ public class Ticket {
     @JoinColumn(name = "assigned_user_id")
     private User assignedUser;
 
+    @Version
+    private Long version;
+
     public Ticket(String title, String description, Status status, Priority priority, User assignedUser) {
         this.title = title;
         this.description = description;

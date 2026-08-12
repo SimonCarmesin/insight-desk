@@ -1,26 +1,34 @@
 package de.adesso.testing.ticketservice.model.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "password")
 @Entity(name = "Users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     private String name;
+
     private String password;
 
+    @Version
+    private Long version;
+
     public User(String name, String password) {
+        this.role = Role.USER;
         this.name = name;
         this.password = password;
     }
