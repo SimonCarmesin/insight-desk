@@ -85,6 +85,10 @@ public class TicketService {
 
     @Transactional
     public Ticket updateTicketDescription(Long id, String newDescription) {
+        if (newDescription.isEmpty()) {
+            throw new InvalidTicketDataException("Description must not be empty");
+        }
+
         Ticket ticket = ticketRepo.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
