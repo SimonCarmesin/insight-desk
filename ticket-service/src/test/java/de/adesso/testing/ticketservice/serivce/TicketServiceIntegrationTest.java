@@ -1,5 +1,6 @@
 package de.adesso.testing.ticketservice.serivce;
 
+import de.adesso.testing.ticketservice.AbstractIntegrationTest;
 import de.adesso.testing.ticketservice.model.tickets.ticketrequests.CreateTicketRequest;
 import de.adesso.testing.ticketservice.model.tickets.Priority;
 import de.adesso.testing.ticketservice.model.tickets.Status;
@@ -11,27 +12,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Testcontainers
-class TicketServiceIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+class TicketServiceIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private TicketService ticketService;
