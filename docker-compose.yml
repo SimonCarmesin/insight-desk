@@ -1,14 +1,25 @@
 services:
-  postgres:
+  postgres-ticket:
     image: postgres:16-alpine
     ports:
-      - ${POSTGRES_PORT}:5432
+      - ${POSTGRES_TICKET_PORT}:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-ticket-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_TICKET_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_TICKET_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_TICKET_DB}
+
+  postgres-user:
+    image: postgres:16-alpine
+    ports:
+      - ${POSTGRES_USER_PORT}:5432
+    volumes:
+      - postgres-user-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_USER_DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_USER_DB_NAME}
 
   ticket-service:
     build:
@@ -16,11 +27,26 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-ticket:5432/${POSTGRES_TICKET_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_TICKET_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_TICKET_PASSWORD}
+      - USER_SERVICE_BASE_URL=http://user-service:8081
     depends_on:
-      - postgres
+      - postgres-ticket
+      - user-service
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/${POSTGRES_USER_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER_DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_USER_DB_PASSWORD}
+    depends_on:
+      - postgres-user
 
 volumes:
-  postgres-data:
+  postgres-ticket-data:
+  postgres-user-data:

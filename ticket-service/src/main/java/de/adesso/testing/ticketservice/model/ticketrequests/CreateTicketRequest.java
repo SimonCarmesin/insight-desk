@@ -1,4 +1,4 @@
-package de.adesso.testing.ticketservice.model.tickets.ticketrequests;
+package de.adesso.testing.ticketservice.model.ticketrequests;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

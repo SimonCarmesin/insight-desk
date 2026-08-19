@@ -1,6 +1,5 @@
-package de.adesso.testing.ticketservice.model.tickets;
+package de.adesso.testing.ticketservice.model;
 
-import de.adesso.testing.ticketservice.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +13,7 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String title;
 
@@ -26,18 +25,16 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    @ManyToOne
-    @JoinColumn(name = "assigned_user_id")
-    private User assignedUser;
+    private Long assignedUserId;
 
     @Version
     private Long version;
 
-    public Ticket(String title, String description, Status status, Priority priority, User assignedUser) {
+    public Ticket(String title, String description, Status status, Priority priority, Long assignedUserId) {
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
-        this.assignedUser = assignedUser;
+        this.assignedUserId = assignedUserId;
     }
 }

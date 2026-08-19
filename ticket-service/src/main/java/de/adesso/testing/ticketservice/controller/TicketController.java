@@ -1,9 +1,9 @@
 package de.adesso.testing.ticketservice.controller;
 
-import de.adesso.testing.ticketservice.model.tickets.ticketrequests.CreateTicketRequest;
-import de.adesso.testing.ticketservice.model.tickets.Ticket;
-import de.adesso.testing.ticketservice.model.tickets.ticketrequests.UpdateStatusRequest;
-import de.adesso.testing.ticketservice.model.tickets.ticketrequests.UpdateTicketDescriptionRequest;
+import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
+import de.adesso.testing.ticketservice.model.Ticket;
+import de.adesso.testing.ticketservice.model.ticketrequests.UpdateStatusRequest;
+import de.adesso.testing.ticketservice.model.ticketrequests.UpdateTicketDescriptionRequest;
 import de.adesso.testing.ticketservice.serivce.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
