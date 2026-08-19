@@ -1,15 +1,15 @@
 package de.adesso.testing.ticketservice.serivce;
 
+import de.adesso.testing.ticketservice.client.UserDto;
+import de.adesso.testing.ticketservice.client.UserServiceClient;
 import de.adesso.testing.ticketservice.exception.InvalidTicketDataException;
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
 import de.adesso.testing.ticketservice.exception.UserNotFoundException;
-import de.adesso.testing.ticketservice.model.tickets.Priority;
-import de.adesso.testing.ticketservice.model.tickets.Status;
-import de.adesso.testing.ticketservice.model.tickets.Ticket;
-import de.adesso.testing.ticketservice.model.tickets.ticketrequests.CreateTicketRequest;
-import de.adesso.testing.ticketservice.model.user.User;
+import de.adesso.testing.ticketservice.model.Priority;
+import de.adesso.testing.ticketservice.model.Status;
+import de.adesso.testing.ticketservice.model.Ticket;
+import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
 import de.adesso.testing.ticketservice.repository.TicketRepo;
-import de.adesso.testing.ticketservice.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class TicketServiceTest {
 
@@ -32,24 +31,20 @@ class TicketServiceTest {
     private TicketRepo ticketRepo;
 
     @Mock
-    private UserRepo userRepo;
+    private UserServiceClient userServiceClient;
 
     @InjectMocks
     private TicketService ticketService;
 
-    private User testUser;
     private Ticket openTicket;
     private Ticket closedTicket;
 
     @BeforeEach
     void setUp() {
-        testUser = new User("Alex", "hashedPw");
-        testUser.setId(1L);
-
-        openTicket = new Ticket("Open Ticket", "Desc", Status.OPEN, Priority.LOW, testUser);
+        openTicket = new Ticket("Open Ticket", "Desc", Status.OPEN, Priority.LOW, 1L);
         openTicket.setId(1L);
 
-        closedTicket = new Ticket("Closed Ticket", "Desc", Status.CLOSED, Priority.HIGH, testUser);
+        closedTicket = new Ticket("Closed Ticket", "Desc", Status.CLOSED, Priority.HIGH, 1L);
         closedTicket.setId(2L);
     }
 
@@ -58,7 +53,7 @@ class TicketServiceTest {
     @Test
     void createTicket_withValidData_savesAndReturnsTicket() {
         CreateTicketRequest request = new CreateTicketRequest("Title", "Desc", "OPEN", "LOW", 1L);
-        when(userRepo.findById(1L)).thenReturn(Optional.of(testUser));
+        when(userServiceClient.getUserById(1L)).thenReturn(new UserDto(1L, "Alex", "USER"));
         when(ticketRepo.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Ticket result = ticketService.createTicket(request);
@@ -71,7 +66,7 @@ class TicketServiceTest {
     @Test
     void createTicket_withUnknownUser_throwsException() {
         CreateTicketRequest request = new CreateTicketRequest("Title", "Desc", "OPEN", "LOW", 99L);
-        when(userRepo.findById(99L)).thenReturn(Optional.empty());
+        when(userServiceClient.getUserById(99L)).thenThrow(new UserNotFoundException(99L));
 
         assertThrows(UserNotFoundException.class, () -> ticketService.createTicket(request));
         verify(ticketRepo, never()).save(any());

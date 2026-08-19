@@ -1,9 +1,9 @@
 package de.adesso.testing.ticketservice.controller;
 
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
-import de.adesso.testing.ticketservice.model.tickets.Priority;
-import de.adesso.testing.ticketservice.model.tickets.Status;
-import de.adesso.testing.ticketservice.model.tickets.Ticket;
+import de.adesso.testing.ticketservice.model.Priority;
+import de.adesso.testing.ticketservice.model.Status;
+import de.adesso.testing.ticketservice.model.Ticket;
 import de.adesso.testing.ticketservice.serivce.TicketService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

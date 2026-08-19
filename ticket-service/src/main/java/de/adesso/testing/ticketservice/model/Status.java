@@ -1,4 +1,4 @@
-package de.adesso.testing.ticketservice.model.tickets;
+package de.adesso.testing.ticketservice.model;
 
 public enum Status {
 

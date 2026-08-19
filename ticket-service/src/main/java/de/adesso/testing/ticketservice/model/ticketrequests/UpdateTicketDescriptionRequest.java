@@ -1,3 +1,3 @@
-package de.adesso.testing.ticketservice.model.tickets.ticketrequests;
+package de.adesso.testing.ticketservice.model.ticketrequests;
 
 public record UpdateTicketDescriptionRequest(String newDescription) {}

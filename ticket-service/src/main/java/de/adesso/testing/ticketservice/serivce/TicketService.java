@@ -1,15 +1,13 @@
 package de.adesso.testing.ticketservice.serivce;
 
+import de.adesso.testing.ticketservice.client.UserServiceClient;
 import de.adesso.testing.ticketservice.exception.InvalidTicketDataException;
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
-import de.adesso.testing.ticketservice.exception.UserNotFoundException;
-import de.adesso.testing.ticketservice.model.tickets.ticketrequests.CreateTicketRequest;
-import de.adesso.testing.ticketservice.model.tickets.Priority;
-import de.adesso.testing.ticketservice.model.tickets.Status;
-import de.adesso.testing.ticketservice.model.tickets.Ticket;
-import de.adesso.testing.ticketservice.model.user.User;
+import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
+import de.adesso.testing.ticketservice.model.Priority;
+import de.adesso.testing.ticketservice.model.Status;
+import de.adesso.testing.ticketservice.model.Ticket;
 import de.adesso.testing.ticketservice.repository.TicketRepo;
-import de.adesso.testing.ticketservice.repository.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +17,11 @@ import java.util.List;
 public class TicketService {
 
     private final TicketRepo ticketRepo;
-    private final UserRepo userRepo;
+    private final UserServiceClient userServiceClient;
 
-    public TicketService(TicketRepo ticketRepo, UserRepo userRepo) {
+    public TicketService(TicketRepo ticketRepo, UserServiceClient userServiceClient) {
         this.ticketRepo = ticketRepo;
-        this.userRepo = userRepo;
+        this.userServiceClient = userServiceClient;
     }
 
     @Transactional
@@ -34,13 +32,12 @@ public class TicketService {
             throw new InvalidTicketDataException("Missing required ticket fields");
         }
 
-        User assignedUser = userRepo.findById(request.assignedUserId())
-                .orElseThrow(() -> new UserNotFoundException(request.assignedUserId()));
+        userServiceClient.getUserById(request.assignedUserId());
 
         Status status = Status.valueOf(request.status());
         Priority priority = Priority.valueOf(request.priority());
 
-        Ticket ticket = new Ticket(request.title(), request.description(), status, priority, assignedUser);
+        Ticket ticket = new Ticket(request.title(), request.description(), status, priority, request.assignedUserId());
         return ticketRepo.save(ticket);
     }
 
