@@ -1,6 +1,9 @@
 package de.adesso.testing.ticketservice.serivce;
 
 import de.adesso.testing.ticketservice.client.UserServiceClient;
+import de.adesso.testing.ticketservice.event.TicketStatusChangedEvent;
+import de.adesso.testing.ticketservice.event.TicketCreatedEvent;
+import de.adesso.testing.ticketservice.event.TicketEventProducer;
 import de.adesso.testing.ticketservice.exception.InvalidTicketDataException;
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
 import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
@@ -18,10 +21,12 @@ public class TicketService {
 
     private final TicketRepo ticketRepo;
     private final UserServiceClient userServiceClient;
+    private final TicketEventProducer ticketEventProducer;
 
-    public TicketService(TicketRepo ticketRepo, UserServiceClient userServiceClient) {
+    public TicketService(TicketRepo ticketRepo, UserServiceClient userServiceClient, TicketEventProducer ticketEventProducer) {
         this.ticketRepo = ticketRepo;
         this.userServiceClient = userServiceClient;
+        this.ticketEventProducer = ticketEventProducer;
     }
 
     @Transactional
@@ -38,7 +43,12 @@ public class TicketService {
         Priority priority = Priority.valueOf(request.priority());
 
         Ticket ticket = new Ticket(request.title(), request.description(), status, priority, request.assignedUserId());
-        return ticketRepo.save(ticket);
+        Ticket savedTicket = ticketRepo.save(ticket);
+
+        ticketEventProducer.publishTicketCreated(
+                new TicketCreatedEvent(savedTicket.getId(), savedTicket.getTitle(), savedTicket.getAssignedUserId()));
+
+        return savedTicket;
     }
 
     private boolean isBlank(String value) {
@@ -60,14 +70,22 @@ public class TicketService {
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
         Status newStatus = Status.valueOf(newStatusRaw);
+        Status oldStatus = ticket.getStatus();
 
-        if (ticket.getStatus() == Status.CLOSED
+        if (oldStatus == Status.CLOSED
                 && (newStatus == Status.OPEN || newStatus == Status.IN_PROGRESS)) {
             throw new InvalidTicketDataException("Cannot change status from CLOSED to " + newStatus);
         }
 
         ticket.setStatus(newStatus);
-        return ticketRepo.save(ticket);
+        Ticket savedTicket = ticketRepo.save(ticket);
+
+        if (newStatus == Status.CLOSED) {
+            ticketEventProducer.publishTicketStatus(
+                    new TicketStatusChangedEvent(savedTicket.getId(), savedTicket.getTitle(), oldStatus, savedTicket.getStatus()));
+        }
+
+        return savedTicket;
     }
 
     @Transactional
