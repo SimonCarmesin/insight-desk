@@ -2,6 +2,8 @@ package de.adesso.testing.ticketservice.serivce;
 
 import de.adesso.testing.ticketservice.client.UserDto;
 import de.adesso.testing.ticketservice.client.UserServiceClient;
+import de.adesso.testing.ticketservice.event.TicketCreatedEvent;
+import de.adesso.testing.ticketservice.event.TicketEventProducer;
 import de.adesso.testing.ticketservice.exception.InvalidTicketDataException;
 import de.adesso.testing.ticketservice.exception.TicketNotFoundException;
 import de.adesso.testing.ticketservice.exception.UserNotFoundException;
@@ -33,6 +35,9 @@ class TicketServiceTest {
     @Mock
     private UserServiceClient userServiceClient;
 
+    @Mock
+    private TicketEventProducer ticketEventProducer;
+
     @InjectMocks
     private TicketService ticketService;
 
@@ -61,6 +66,7 @@ class TicketServiceTest {
         assertEquals("Title", result.getTitle());
         assertEquals(Status.OPEN, result.getStatus());
         verify(ticketRepo).save(any(Ticket.class));
+        verify(ticketEventProducer).publishTicketCreated(any(TicketCreatedEvent.class));
     }
 
     @Test

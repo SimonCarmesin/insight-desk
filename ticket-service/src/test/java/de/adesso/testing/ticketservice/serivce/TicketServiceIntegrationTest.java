@@ -3,6 +3,8 @@ package de.adesso.testing.ticketservice.serivce;
 import de.adesso.testing.ticketservice.AbstractIntegrationTest;
 import de.adesso.testing.ticketservice.client.UserDto;
 import de.adesso.testing.ticketservice.client.UserServiceClient;
+import de.adesso.testing.ticketservice.event.TicketCreatedEvent;
+import de.adesso.testing.ticketservice.event.TicketEventProducer;
 import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
 import de.adesso.testing.ticketservice.model.Priority;
 import de.adesso.testing.ticketservice.model.Status;
@@ -15,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -28,6 +32,9 @@ class TicketServiceIntegrationTest extends AbstractIntegrationTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private TicketEventProducer ticketEventProducer;
 
     private static final Long TEST_USER_ID = 1L;
 
@@ -48,6 +55,7 @@ class TicketServiceIntegrationTest extends AbstractIntegrationTest {
         Ticket fromDb = ticketRepo.findById(created.getId()).orElseThrow();
         assertEquals("Order issue", fromDb.getTitle());
         assertEquals(TEST_USER_ID, fromDb.getAssignedUserId());
+        verify(ticketEventProducer).publishTicketCreated(any(TicketCreatedEvent.class));
     }
 
     @Test
