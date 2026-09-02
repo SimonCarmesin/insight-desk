@@ -7,9 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-ticket-service:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,8 +21,45 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x ticket-service/gradlew
-        working-directory: .
 
       - name: Run tests
         run: ./gradlew test
         working-directory: ticket-service
+
+  test-user-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x user-service/gradlew
+
+      - name: Run tests
+        run: ./gradlew test
+        working-directory: user-service
+
+  test-notification-service:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x notification-service/gradlew
+
+      - name: Run tests
+        run: ./gradlew test
+        working-directory: notification-service

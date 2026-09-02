@@ -82,7 +82,7 @@ public class TicketService {
 
         if (newStatus == Status.CLOSED) {
             ticketEventProducer.publishTicketStatus(
-                    new TicketStatusChangedEvent(savedTicket.getId(), savedTicket.getTitle(), oldStatus, savedTicket.getStatus()));
+                    new TicketStatusChangedEvent(savedTicket.getId(), savedTicket.getTitle(), oldStatus, savedTicket.getStatus(), savedTicket.getAssignedUserId()));
         }
 
         return savedTicket;

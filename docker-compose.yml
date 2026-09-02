@@ -75,6 +75,15 @@ services:
     depends_on:
       - postgres-user
 
+  notification-service:
+    build:
+      context: ./notification-service
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - USER_SERVICE_BASE_URL=http://user-service:8081
+    depends_on:
+      - kafka
+
 volumes:
   postgres-ticket-data:
   postgres-user-data:
