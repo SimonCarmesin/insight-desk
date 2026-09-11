@@ -91,6 +91,17 @@ services:
     depends_on:
       - kafka
 
+  intake-service:
+    build:
+      context: ./intake-service
+    ports:
+      - "8082:8082"
+    environment:
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+      - AI_HUB_BASE_URL=${AI_HUB_BASE_URL}
+      - AI_HUB_API_KEY=${AI_HUB_API_KEY}
+      - AI_HUB_MODEL=${AI_HUB_MODEL}
+
   frontend-service:
     build:
       context: ./frontend-service
@@ -99,9 +110,11 @@ services:
     environment:
       - TICKET_SERVICE_PUBLIC_URL=${TICKET_SERVICE_PUBLIC_URL}
       - USER_SERVICE_PUBLIC_URL=${USER_SERVICE_PUBLIC_URL}
+      - INTAKE_SERVICE_PUBLIC_URL=${INTAKE_SERVICE_PUBLIC_URL}
     depends_on:
       - ticket-service
       - user-service
+      - intake-service
 
 volumes:
   postgres-ticket-data:

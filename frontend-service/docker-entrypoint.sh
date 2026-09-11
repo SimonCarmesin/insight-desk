@@ -6,8 +6,9 @@ set -eu
 # faellt auf sinnvolle lokale URLs zurueck.
 : "${TICKET_SERVICE_PUBLIC_URL:=http://localhost:8080}"
 : "${USER_SERVICE_PUBLIC_URL:=http://localhost:8081}"
-export TICKET_SERVICE_PUBLIC_URL USER_SERVICE_PUBLIC_URL
+: "${INTAKE_SERVICE_PUBLIC_URL:=http://localhost:8082}"
+export TICKET_SERVICE_PUBLIC_URL USER_SERVICE_PUBLIC_URL INTAKE_SERVICE_PUBLIC_URL
 
-envsubst '${TICKET_SERVICE_PUBLIC_URL} ${USER_SERVICE_PUBLIC_URL}' \
+envsubst '${TICKET_SERVICE_PUBLIC_URL} ${USER_SERVICE_PUBLIC_URL} ${INTAKE_SERVICE_PUBLIC_URL}' \
   < /usr/share/nginx/html/config.js.template \
   > /usr/share/nginx/html/config.js

@@ -1,7 +1,9 @@
-// Wird beim Container-Start aus den Env-Variablen TICKET_SERVICE_PUBLIC_URL
-// und USER_SERVICE_PUBLIC_URL gerendert (siehe docker-entrypoint.sh) - nicht
-// von Hand editieren, die Werte kommen aus docker-compose.yml / .env.
+// Wird beim Container-Start aus den Env-Variablen TICKET_SERVICE_PUBLIC_URL,
+// USER_SERVICE_PUBLIC_URL und INTAKE_SERVICE_PUBLIC_URL gerendert (siehe
+// docker-entrypoint.sh) - nicht von Hand editieren, die Werte kommen aus
+// docker-compose.yml / .env.
 window.APP_CONFIG = {
   TICKET_SERVICE_URL: "${TICKET_SERVICE_PUBLIC_URL}",
-  USER_SERVICE_URL: "${USER_SERVICE_PUBLIC_URL}"
+  USER_SERVICE_URL: "${USER_SERVICE_PUBLIC_URL}",
+  INTAKE_SERVICE_URL: "${INTAKE_SERVICE_PUBLIC_URL}"
 };

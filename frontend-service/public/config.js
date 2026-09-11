@@ -3,5 +3,6 @@
 // config.js.template ueberschrieben (siehe docker-entrypoint.sh).
 window.APP_CONFIG = {
   TICKET_SERVICE_URL: "http://localhost:8080",
-  USER_SERVICE_URL: "http://localhost:8081"
+  USER_SERVICE_URL: "http://localhost:8081",
+  INTAKE_SERVICE_URL: "http://localhost:8082"
 };

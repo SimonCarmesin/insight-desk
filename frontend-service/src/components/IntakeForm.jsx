@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createTicket } from "../api.js";
+import { createTicket, extractFromText } from "../api.js";
 
 const EMPTY = {
   title: "",
@@ -14,9 +14,35 @@ const EMPTY = {
 export default function IntakeForm({ users, onCreated, onError }) {
   const [form, setForm] = useState(EMPTY);
   const [submitting, setSubmitting] = useState(false);
+  const [rawText, setRawText] = useState("");
+  const [extracting, setExtracting] = useState(false);
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function handleExtract() {
+    if (!rawText.trim()) return;
+    setExtracting(true);
+    onError(null);
+    try {
+      const suggestion = await extractFromText(rawText.trim());
+      // Nur Felder uebernehmen, die der Agent tatsaechlich erkannt hat -
+      // Rest bleibt wie es ist, damit nichts ueberschrieben wird, das du
+      // vielleicht schon selbst eingetragen hattest.
+      setForm((f) => ({
+        ...f,
+        title: suggestion.title ?? f.title,
+        description: suggestion.description ?? f.description,
+        clientName: suggestion.clientName ?? f.clientName,
+        price: suggestion.price != null ? String(suggestion.price) : f.price,
+        kind: suggestion.kind ?? f.kind
+      }));
+    } catch (err) {
+      onError("Konnte die Anfrage nicht automatisch strukturieren: " + err.message + " — bitte manuell ausfuellen.");
+    } finally {
+      setExtracting(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -37,6 +63,7 @@ export default function IntakeForm({ users, onCreated, onError }) {
         kind: form.kind || null
       });
       setForm(EMPTY);
+      setRawText("");
       await onCreated();
     } catch (err) {
       onError("Ticket konnte nicht erstellt werden: " + err.message);
@@ -50,6 +77,30 @@ export default function IntakeForm({ users, onCreated, onError }) {
       <div className="panel-title">
         <h2>Neues Ticket erfassen</h2>
       </div>
+
+      <div className="intake-agent">
+        <label>
+          Text der Anfrage (optional)
+          <textarea
+            placeholder="Hier den Text einer gefundenen Anfrage einfuegen (z.B. von einem Freelance-Marktplatz) ..."
+            value={rawText}
+            onChange={(e) => setRawText(e.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          className="btn btn-ghost btn-block"
+          onClick={handleExtract}
+          disabled={extracting || !rawText.trim()}
+        >
+          {extracting ? "Agent liest mit …" : "🤖 Mit KI ausfuellen"}
+        </button>
+        <p className="hint">
+          Der Intake-Agent liest nur mit und schlaegt Felder vor - er legt kein Ticket an. Pruefen und
+          unten bestaetigen bleibt bei dir.
+        </p>
+      </div>
+
       <form className="intake-form" onSubmit={handleSubmit}>
         <label>
           Titel
@@ -136,8 +187,8 @@ export default function IntakeForm({ users, onCreated, onError }) {
         </button>
       </form>
       <p className="hint">
-        Lead manuell erfasst (z.B. aus einem Freelance-Marktplatz) — entspricht dem einen Klick im
-        Human-in-the-Loop-Workflow. Ein automatischer Intake-Agent kann diesen Schritt spaeter ersetzen.
+        Auftragsquelle bleibt Handarbeit (kein Marktplatz bietet dafuer eine API) - der Intake-Agent
+        oben uebernimmt nur das Strukturieren. Anlegen ist weiterhin ein bewusster Klick.
       </p>
     </>
   );

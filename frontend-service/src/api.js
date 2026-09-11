@@ -1,6 +1,7 @@
 const CFG = window.APP_CONFIG || {};
 export const TICKET_BASE = CFG.TICKET_SERVICE_URL || "http://localhost:8080";
 export const USER_BASE = CFG.USER_SERVICE_URL || "http://localhost:8081";
+export const INTAKE_BASE = CFG.INTAKE_SERVICE_URL || "http://localhost:8082";
 
 async function apiFetch(url, options) {
   const res = await fetch(url, options);
@@ -64,5 +65,16 @@ export function postComment(id, author, text) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ author, text })
+  });
+}
+
+// Intake-Agent: strukturiert den eingefuegten Rohtext einer Anfrage in
+// Ticket-Felder. Legt selbst nichts an - das Ergebnis fuellt nur das
+// Formular vor, Bestaetigung bleibt beim Menschen.
+export function extractFromText(rawText) {
+  return apiFetch(`${INTAKE_BASE}/intake/extract`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rawText })
   });
 }
