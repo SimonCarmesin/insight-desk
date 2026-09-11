@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +25,10 @@ public class KafkaProducerConfig {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        config.put(JsonSerializer.TYPE_MAPPINGS,
+        // JsonSerializer (Jackson 2) ist seit Spring Kafka 4.0 als "for removal" markiert -
+        // JacksonJsonSerializer (Jackson 3) ist der Nachfolger, gleiche Config-Keys.
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
+        config.put(JacksonJsonSerializer.TYPE_MAPPINGS,
                 "ticketCreated:de.adesso.testing.ticketservice.event.TicketCreatedEvent,"
                         + "ticketStatusChanged:de.adesso.testing.ticketservice.event.TicketStatusChangedEvent");
         return new DefaultKafkaProducerFactory<>(config);

@@ -1,5 +1,7 @@
 package de.adesso.testing.ticketservice.controller;
 
+import de.adesso.testing.ticketservice.model.TicketComment;
+import de.adesso.testing.ticketservice.model.ticketrequests.AddCommentRequest;
 import de.adesso.testing.ticketservice.model.ticketrequests.CreateTicketRequest;
 import de.adesso.testing.ticketservice.model.Ticket;
 import de.adesso.testing.ticketservice.model.ticketrequests.UpdateStatusRequest;
@@ -57,5 +59,18 @@ public class TicketController {
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // --- Neu: Aktivitäts-Kommentare ---
+
+    @PostMapping("/tickets/{id}/comments")
+    public ResponseEntity<TicketComment> addComment(@PathVariable Long id, @Valid @RequestBody AddCommentRequest request) {
+        TicketComment comment = ticketService.addComment(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
+    }
+
+    @GetMapping("/tickets/{id}/comments")
+    public ResponseEntity<List<TicketComment>> getComments(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.getComments(id));
     }
 }

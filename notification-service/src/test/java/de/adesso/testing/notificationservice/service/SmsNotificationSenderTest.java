@@ -4,6 +4,8 @@ import de.adesso.testing.notificationservice.event.TicketCreatedEvent;
 import de.adesso.testing.notificationservice.event.TicketStatusChangedEvent;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SmsNotificationSenderTest {
@@ -12,14 +14,14 @@ class SmsNotificationSenderTest {
 
     @Test
     void supports_statusChangedToClosed_returnsTrue() {
-        TicketStatusChangedEvent event = new TicketStatusChangedEvent(1L, "Title", "IN_PROGRESS", "CLOSED", 2L);
+        TicketStatusChangedEvent event = new TicketStatusChangedEvent(1L, "Title", "IN_PROGRESS", "CLOSED", 2L, "Kunde", BigDecimal.TEN);
 
         assertTrue(sender.supports(event));
     }
 
     @Test
     void supports_ticketCreatedEvent_returnsFalse() {
-        TicketCreatedEvent event = new TicketCreatedEvent(1L, "Title", 2L);
+        TicketCreatedEvent event = new TicketCreatedEvent(1L, "Title", 2L, "Kunde", BigDecimal.TEN);
 
         assertFalse(sender.supports(event));
     }

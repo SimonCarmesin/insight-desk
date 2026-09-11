@@ -25,12 +25,18 @@ public class TicketEventConsumer {
 
     @KafkaListener(topics = "ticket-events", groupId = "notification-service")
     public void consume(TicketEvent event) {
+        List<NotificationSender> matchingSenders = senders.stream()
+                .filter(sender -> sender.supports(event))
+                .toList();
+
+        if (matchingSenders.isEmpty()) {
+            return;
+        }
+
         Long assignedUserId = resolveAssignedUserId(event);
         String recipientName = resolveRecipientName(assignedUserId);
 
-        senders.stream()
-                .filter(sender -> sender.supports(event))
-                .forEach(sender -> sender.send(recipientName, buildMessage(event)));
+        matchingSenders.forEach(sender -> sender.handle(event, recipientName));
     }
 
     private Long resolveAssignedUserId(TicketEvent event) {
@@ -48,14 +54,5 @@ public class TicketEventConsumer {
             log.warn("Could not resolve user {}, falling back to generic recipient", userId, e);
             return "user-" + userId;
         }
-    }
-
-    private String buildMessage(TicketEvent event) {
-        return switch (event) {
-            case TicketCreatedEvent created -> "Ticket '" + created.title() + "' wurde erstellt.";
-            case TicketStatusChangedEvent statusChanged ->
-                    "Ticket '" + statusChanged.title() + "': Status geändert von "
-                            + statusChanged.oldStatus() + " zu " + statusChanged.newStatus() + ".";
-        };
     }
 }

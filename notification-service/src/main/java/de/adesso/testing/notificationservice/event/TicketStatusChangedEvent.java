@@ -1,3 +1,13 @@
 package de.adesso.testing.notificationservice.event;
 
-public record TicketStatusChangedEvent(Long ticketId, String title, String oldStatus, String newStatus, Long assignedUserId) implements TicketEvent {}
+import java.math.BigDecimal;
+
+public record TicketStatusChangedEvent(
+        Long ticketId,
+        String title,
+        String oldStatus,
+        String newStatus,
+        Long assignedUserId,
+        String clientName,
+        BigDecimal price
+) implements TicketEvent {}
