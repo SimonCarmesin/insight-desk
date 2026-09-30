@@ -630,3 +630,22 @@ Wie immer ungetestet von mir (kein echter AI-Hub-Zugriff aus meiner
 Umgebung, Unit-Tests mocken den Client weiterhin) — bitte `AI_HUB_API_KEY`
 eintragen und den bekannten Docker-Compose-Befehl mit einem Beispieltext
 durchprobieren.
+
+### Nachtrag: CI-Fix intake-service (`spring-boot-starter-webmvc-test` fehlte)
+
+CI-Fehler gemeldet: `intake-service`s Gradle-Build scheiterte in der GitHub-Actions-Pipeline
+beim Kompilieren der Tests mit `package org.springframework.boot.webmvc.test.autoconfigure
+does not exist` / `cannot find symbol: class WebMvcTest` in `IntakeControllerTest.java`.
+
+Ursache: In Spring Boot 4 ist die Test-Unterstützung für Web-Slices (`@WebMvcTest` &
+Co.) in ein eigenes, separates Artefakt ausgelagert (`spring-boot-starter-webmvc-test`) —
+`spring-boot-starter-test` allein bringt es nicht mehr automatisch mit. `ticket-service`
+und `user-service` hatten diese Abhängigkeit schon (deshalb liefen deren `@WebMvcTest`s
+klaglos durch), in `intake-service/build.gradle` fehlte sie schlicht beim initialen
+Aufsetzen des Services.
+
+Fix: eine Zeile in `intake-service/build.gradle` ergänzt:
+```
+testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+```
+Kein Anwendungscode geändert, rein eine fehlende Build-Abhängigkeit.
