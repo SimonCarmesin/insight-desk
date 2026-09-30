@@ -91,7 +91,7 @@ public class TicketService {
         ticket.setStatus(newStatus);
         Ticket savedTicket = ticketRepo.save(ticket);
 
-        // Bewusst weiterhin nur bei CLOSED: davon hängt aktuell u.a. der Email-Versand in
+        // Bewusst weiterhin nur bei CLOSED: davon hängt aktuell u.a. der E-Mail-Versand in
         // notification-service ab (siehe EmailNotificationSender dort).
         if (newStatus == Status.CLOSED) {
             ticketEventProducer.publishTicketStatus(

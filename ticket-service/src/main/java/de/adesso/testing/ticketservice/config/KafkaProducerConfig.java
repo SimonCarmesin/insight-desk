@@ -25,8 +25,6 @@ public class KafkaProducerConfig {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        // JsonSerializer (Jackson 2) ist seit Spring Kafka 4.0 als "for removal" markiert -
-        // JacksonJsonSerializer (Jackson 3) ist der Nachfolger, gleiche Config-Keys.
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
         config.put(JacksonJsonSerializer.TYPE_MAPPINGS,
                 "ticketCreated:de.adesso.testing.ticketservice.event.TicketCreatedEvent,"

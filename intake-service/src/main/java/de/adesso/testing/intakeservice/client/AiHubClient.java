@@ -63,10 +63,10 @@ public class AiHubClient {
                     .body(AiHubChatResponse.class);
 
             if (response == null || response.choices() == null || response.choices().isEmpty()
-                    || response.choices().get(0).message() == null) {
+                    || response.choices().getFirst().message() == null) {
                 throw new ExtractionFailedException("Leere Antwort vom AI Hub erhalten.");
             }
-            return response.choices().get(0).message().content();
+            return response.choices().getFirst().message().content();
         } catch (RestClientException e) {
             log.warn("AI-Hub-Call fehlgeschlagen", e);
             throw new ExtractionFailedException("Anfrage an den AI Hub ist fehlgeschlagen: " + e.getMessage(), e);

@@ -61,8 +61,6 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
-    // --- Neu: Aktivitäts-Kommentare ---
-
     @PostMapping("/tickets/{id}/comments")
     public ResponseEntity<TicketComment> addComment(@PathVariable Long id, @Valid @RequestBody AddCommentRequest request) {
         TicketComment comment = ticketService.addComment(id, request);
